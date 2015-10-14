@@ -25,6 +25,8 @@
     },
 
     togglePiece: function(rowIndex, colIndex) {
+      //+ converts !this.get(rowIndex)[colIndex] to number
+      //coercion
       this.get(rowIndex)[colIndex] = + !this.get(rowIndex)[colIndex];
       this.trigger('change');
     },
@@ -77,14 +79,35 @@
     // ROWS - run from left to right
     // --------------------------------------------------------------
     //
+    //Play with the native getters and setters that Backbone provides.
+    //example: board.get(3) will return the 3rd row of the instance board 
+    //(assuming you created that instance)
+
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      var count = 0;
+      var matrix = this.rows();
+      for(var i = 0; i < matrix.length; i++){
+        if(matrix[rowIndex][i] === 1){
+          count++;
+        }
+      }
+      if(count > 1){
+        return true;
+      }
+      return false;
+
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      var matrix = this.rows();
+      for(var i = 0; i < matrix.length; i++){
+        if(this.hasRowConflictAt(i)){
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -93,13 +116,31 @@
     // --------------------------------------------------------------
     //
     // test if a specific column on this board contains a conflict
+   
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var count = 0;
+      var matrix = this.rows();
+
+      for( var i = 0; i < matrix.length; i++ ){
+        if( matrix[i][colIndex] === 1 ){
+          count += 1;
+        }
+      }
+      if( count > 1){
+        return true;
+      }
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      var matrix = this.rows();
+      for(var i = 0; i < matrix.length; i++){
+        if(this.hasColConflictAt(i)){
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -109,12 +150,43 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+
+      var count = 0;
+      var index = majorDiagonalColumnIndexAtFirstRow;
+
+      var context = this;
+      var recursive = function(rowIndex, colIndex){
+        if(rowIndex === context.rows().length || colIndex === context.rows().length){
+          return;
+        } 
+        // gain access to row
+        // since the row is an array, we can use the colIndex to access that specific spot
+        // to check for queen
+        // this.get(rowIndex) = array, use [i] to access position in the array
+        if(context.get(rowIndex)[colIndex] === 1){
+          count += 1;
+        }
+        recursive(rowIndex+1, colIndex+1);
+      }
+
+      recursive(0, index);
+
+      if(count > 1){
+        return true;
+      } else {
+        return false;
+      }
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var matrix = this.rows();
+      for(var colIndex = 0; colIndex < matrix.length; colIndex++){
+        if(this.hasMajorDiagonalConflictAt(colIndex)){
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -124,11 +196,38 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+      var count = 0;
+      var index = minorDiagonalColumnIndexAtFirstRow;
+      var context = this;
+
+      var recursive = function(rowIndex, colIndex){
+        if(rowIndex === context.rows().length || colIndex < 0){
+          return;
+        }
+
+        if(context.get(rowIndex)[colIndex] === 1){
+          count++;
+        }
+
+        recursive(rowIndex+1,colIndex-1);
+      }
+
+      recursive(0,index);
+
+      if(count > 1){
+        return true;
+      }
       return false; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      var matrix = this.rows();
+      for(var colIndex = 0; colIndex < matrix.length; colIndex++){
+        if(this.hasMinorDiagonalConflictAt(colIndex)){
+          return true;
+        }
+      }
       return false; // fixme
     }
 
