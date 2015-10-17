@@ -156,15 +156,15 @@
 
       var context = this;
       var recursive = function(rowIndex, colIndex){
+        var row = rowIndex;
         if(rowIndex === context.rows().length || colIndex === context.rows().length){
           return;
         } 
-        // gain access to row
-        // since the row is an array, we can use the colIndex to access that specific spot
-        // to check for queen
-        // this.get(rowIndex) = array, use [i] to access position in the array
         if(context.get(rowIndex)[colIndex] === 1){
           count += 1;
+        }
+        if(colIndex > context.rows().length){
+          recursive(row+1, colIndex+1);
         }
         recursive(rowIndex+1, colIndex+1);
       }
@@ -176,6 +176,7 @@
       } else {
         return false;
       }
+ 
     },
 
     // test if any major diagonals on this board contain conflicts
@@ -187,6 +188,7 @@
         }
       }
       return false;
+      
     },
 
 
@@ -204,7 +206,9 @@
         if(rowIndex === context.rows().length || colIndex < 0){
           return;
         }
-
+        if(colIndex === 0){
+          recursive(rowIndex+1, context.rows().length-1);
+        }
         if(context.get(rowIndex)[colIndex] === 1){
           count++;
         }
@@ -217,8 +221,10 @@
       if(count > 1){
         return true;
       }
-      return false; // fixme
+      return false; // fixme 
+      
     },
+      
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
@@ -229,6 +235,7 @@
         }
       }
       return false; // fixme
+      
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/

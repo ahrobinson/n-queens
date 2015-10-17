@@ -112,11 +112,7 @@ window.countNQueensSolutions = function(n) {
   var solutionCount = 0;
   var board = new Board({n:n});
 
-  if(n === 1 || n === 0){
-    return 1;
-  } else if(n === 2 || n === 3){
-    return 0;
-  }
+  
 //recursive function
   //start from the first row and then down, the number of rows equal number of rooks, solution++
   var numSolutions = function(row){
